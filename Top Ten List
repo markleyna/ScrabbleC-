@@ -1,0 +1,128 @@
+//Programmer: Nicole Markley
+//Purpose: Create a class that updates and outputs a file of the Top Ten values
+//Done, but not checked 4/29/15
+
+#ifndef _TOPTEN_H
+#define _TOPTEN_H
+
+#include "Player.h";
+#include<iomanip>
+#include<iostream>
+#include<sstream>
+#include<string>
+#include<fstream>
+#include<ctime>
+using namespace std;
+
+class TopTen{
+private:
+	Player arrTopTen[11];
+public:
+	//Constructors
+	TopTen(); //Default
+	TopTen(const TopTen &);
+	//Member Functions
+	void output();
+	void check(Player New);
+	void replace();
+	void save();
+	string makeLine(int space);
+};
+
+//Constructors
+//Default
+TopTen::TopTen(){
+	string line;
+	int tempScore, num = 0;
+
+	ifstream myfile ("F:\\CP 3\\Scrabble\\TopTen.txt");
+	if (myfile.is_open()){
+		while ( getline (myfile,line) ){
+			arrTopTen[num].setIn(line.substr(0,2));
+			istringstream buffer(line.substr(2,2));
+			buffer >> tempScore;
+			arrTopTen[num].setScore(tempScore);
+			num++;
+		}
+    myfile.close();
+	}
+	else cout << "Unable to open file";
+};
+
+//Copy
+TopTen::TopTen(const TopTen & list){
+	for(int i = 0; i < 10; i++){
+		arrTopTen[i] = list.arrTopTen[i];
+	};
+};
+
+//Member Functions
+
+//Function outputs the Top Ten players
+void TopTen::output(){
+	cout << "The Top Ten players and scores are: " << endl;
+	for(int i = 0; i < 10; i++){
+		arrTopTen[i].makeString();
+	}
+};
+
+//Function checks if the player makes the top ten 
+void TopTen::check(Player New){
+	string string;
+	if(New.getScore() > arrTopTen[9].getScore()){
+		arrTopTen[10].setIn(New.getIn());
+		arrTopTen[10].setScore(New.getScore());
+		replace();
+	}
+	else{
+		cout << "Sorry, you didn't make the top ten." << endl;
+		output();
+	}
+};
+
+//Function reorders the Top Ten Players
+void TopTen::replace(){
+	int b = 9, swap = 0;
+	Player temp;
+
+	do{
+		swap = 0;
+		for(int f = 0; f <= b; f++){
+			if(arrTopTen[f].getScore() < arrTopTen[f + 1].getScore()){
+				temp = arrTopTen[f];
+				arrTopTen[f] = arrTopTen[f+1];
+				arrTopTen[f+1] = temp;
+				swap = 1;
+			}
+		}
+		b = b - 1;
+	}while(swap != 0);
+	save();
+	output();
+};
+
+//Function saves the new Top Ten list
+void TopTen::save(){
+	ofstream myfile ("F:\\CP 3\\Scrabble\\TopTen.txt");
+
+	if (myfile.is_open()){
+		for(int i = 0; i <= 9; i++){
+			myfile << makeLine(i) << endl;
+		}
+		myfile.close();
+	}
+	else{
+		cout << "Unable to open file";	
+	}	
+};
+
+//Function to make a line for saving in the Top Ten list
+string TopTen::makeLine(int i){
+	ostringstream buffer;
+
+	buffer << arrTopTen[i].getScore();
+	string score = buffer.str();
+	return arrTopTen[i].getIn() + score;
+};
+
+#endif
