@@ -1,0 +1,75 @@
+// Programmer: Nicole Markley
+// Purpose: To create scrabble tiles.
+// Done and checked 5/8/15
+
+#ifndef _TILE_H
+#define _TILE_H
+
+#include <sstream>
+#include <string>
+#include <iostream>
+using namespace std;
+
+class Tile{
+private:
+	string myLetter;
+	int myValue;
+public:
+	//Constructors
+	Tile(); //default constructor
+	Tile(char letter, int value); //Fill constructor
+	Tile(const Tile &); //Copy Constructor
+	//Member Functions
+	void setLetter(string letter);
+	string getLetter();
+	void setValue(int value);
+	int getValue();
+	void toString();
+};
+
+// Constructors
+// Default
+Tile::Tile(){
+	myLetter = 'A';
+	myValue = 1;
+};
+
+//Fill 
+Tile::Tile(char letter, int score){
+	myLetter = letter;
+	myValue = score;
+};
+
+//Copy
+Tile::Tile(const Tile & T){
+	myLetter = T.myLetter;
+	myValue = T.myValue;
+};
+
+//Member Functions
+void Tile::setLetter(string letter){
+	myLetter = letter;
+};
+
+string Tile::getLetter(){
+	return myLetter;
+};
+
+void Tile::setValue(int score){
+	myValue = score;
+};
+
+int Tile::getValue(){
+	return myValue;
+};
+
+void Tile::toString(){
+	ostringstream buffer;
+	string score, output;
+	buffer << myValue;
+	score = buffer.str();
+	output = myLetter + " worth " + score + " points";
+	cout << output << endl;
+};
+
+#endif
