@@ -1,0 +1,167 @@
+// Programmer: Nicole Markley
+// Purpose: To create a bag of scrabble tiles.
+// Done and checked, 5/8/15
+
+#ifndef _BAGOFTILES_H
+#define _BAGOFTILES_H
+
+#include "Tile.h"
+#include "RandGen.h"
+#include "ScrabbleWord.h"
+#include "Player.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class BagOfTiles{
+private:
+	Tile myBag[100];
+	Tile myHand[7];
+	int myPlace;
+public:
+	//Constructors
+	BagOfTiles(); //Default--reads from a text file
+	BagOfTiles(const BagOfTiles &); //Copy Constructor
+	//Member functions
+	void shuffle();
+	void outputHand();
+	void replaceTiles(int arrUsed[]);
+	int checkJots(string guess, Player &score);
+	void score(Tile guessW[], int length, Player &user);
+};
+
+//Default Constructor
+BagOfTiles::BagOfTiles(){
+	string line, letter;
+	int tempScore, num = 0, freq;
+	ifstream myfile ("F:\\CP 3\\Scrabble\\scrabblevalues.txt");
+	if (myfile.is_open()){
+		for(int i = 0; i < 26; i++){
+			getline (myfile,line);
+			letter = line.substr(0,1);
+			istringstream buffer(line.substr(1,1));
+			buffer >> tempScore;
+			if(tempScore == 0){
+				tempScore = 10;
+			};
+			istringstream buffer2(line.substr(2,2));
+			buffer2 >> freq;
+			for(int z = 0; z < freq; z++){
+				myBag[num].setLetter(letter);
+				myBag[num].setValue(tempScore);
+				num++;
+			};
+		};
+    myfile.close();
+	//for(int w = 0; w < 2; w++){
+		//myBag[num].setLetter("blank");
+		//myBag[num].setScore(0);
+	//}
+	shuffle();
+	for(int i = 0; i < 7; i++){
+		myHand[i] = myBag[i];
+	};
+	myPlace = 0;
+	};
+};
+
+//Copy
+BagOfTiles::BagOfTiles(const BagOfTiles & bag){
+	for(int z = 0; z < 101; z++){
+		myBag[z] = bag.myBag[z];
+	};
+
+	myPlace = bag.myPlace;
+
+	for(int i = 0; i < 7; i++){
+		myHand[i] = bag.myHand[i];
+	};
+};
+
+//Member Function
+
+void BagOfTiles::shuffle(){
+	RandGen rand;
+	int pos;
+	Tile temp;
+
+	for(int r = 0; r < 98; r++){
+		pos = rand.RandInt(97);
+		temp = myBag[r];
+		myBag[r] = myBag[pos];
+		myBag[pos] = temp;
+	}
+};
+
+void BagOfTiles::outputHand(){
+	for(int j = 0; j < 7; j++){
+		myHand[j].toString();
+	}
+	//for(int i = 7; i < 98; i++){
+		//myBag[i].toString();
+	//}
+	myPlace = 7;
+};
+
+void BagOfTiles::replaceTiles(int arrUsed[]){
+	for(int i = 0; i < 7; i++){
+		if(arrUsed[i] == 1){
+			myHand[i] = myBag[myPlace];
+			myPlace++;
+		};
+	};
+};
+
+int BagOfTiles::checkJots(string guess, Player &user){
+	Tile guessW[7];
+	int hits = 0;
+	int arrUsed[7];
+	ScrabbleWord word;
+
+	//Fill guess array
+	for(int i=0; i < guess.length(); i++){
+		guessW[i].setLetter(guess.substr(i,1)); 
+	}
+
+	//Fill Used tile array
+	for(int w = 0; w < 7; w++){
+		arrUsed[w] = 0;
+	};
+
+	//Check for jots
+	hits = 0;
+	for(int o = 0; o < guess.length(); o++){
+		for(int i = 0; i <= 6; i++){
+			if(guessW[o].getLetter() == myHand[i].getLetter() && arrUsed[i] == 0){
+				guessW[o].setValue(myHand[i].getValue()); 
+				arrUsed[i] = 1;
+				hits++;
+				break;
+			}
+		}
+	}
+
+	//Check to see if they used only tiles
+	if(hits == guess.length()){
+		score(guessW, guess.length(), user);
+		replaceTiles(arrUsed);
+		return 1;
+	};
+	if(hits != guess.length()){
+		return 0;
+	};
+};
+
+void BagOfTiles::score(Tile guessW[], int length, Player &user){
+	int score = 0;
+
+	for(int i = 0; i < length; i++){
+		score = score + guessW[i].getValue();
+	};
+	score = score + user.getScore();
+	user.setScore(score);
+	cout << "Your new score is: " << user.getScore() << endl;
+};
+
+#endif
