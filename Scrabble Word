@@ -1,0 +1,100 @@
+//Programmer: Nicole Markley
+//Purpose: To check the words entered by the user.
+//Checked and debugged 5/7/15
+
+#ifndef _SCRABBLEWORD_H
+#define _SCRABBLEWORD_H
+
+#include "BagOfTiles.h"
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+class ScrabbleWord{
+private:
+	//string arrWords[58112]; 
+	string myGuess;
+	vector<string> arrWords;
+public:
+	// Constructors
+	ScrabbleWord(); //Default
+	ScrabbleWord(const ScrabbleWord &); // Copy
+	// Member Functions
+	void setWord(string guess);
+	void getWord();
+	void checkWord();
+	string returnWord();
+};
+
+// Constructors
+// Default
+ScrabbleWord::ScrabbleWord(){
+	string line;
+	int i = 0;
+	arrWords.reserve(58112);
+
+	ifstream myfile("F:\\CP 3\\Scrabble\\dictionary.txt");
+	if (myfile.is_open()){
+		while ( getline (myfile,line) ){
+			arrWords.push_back(line);
+			//arrWords[i] = line;
+			i++;
+		}
+    myfile.close();
+	}
+
+	else cout << "Unable to open file";
+	myGuess = "AAA";
+};
+
+// Copy
+ScrabbleWord::ScrabbleWord(const ScrabbleWord & guess){
+	myGuess = guess.myGuess;
+	for(int i = 0; i < 58112; i++){
+		arrWords[i] = guess.arrWords[i];
+	}
+};
+
+// Member Functions
+
+string ScrabbleWord::returnWord(){
+	return myGuess;
+};
+
+void ScrabbleWord::setWord(string guess){
+	myGuess = guess;
+};
+
+void ScrabbleWord::getWord(){
+	cout << "Enter a guess: ";
+	cin >> myGuess;
+	checkWord();
+};
+
+void ScrabbleWord::checkWord(){
+	int low =0, high =58112, mid, pos = 60000;
+
+	//binary search to check for validity
+	while(low <= high){
+		mid = (low + high)/2;
+		if(myGuess > arrWords[mid]){
+			low = mid +1;
+		}
+		if(myGuess < arrWords[mid]){
+			high = mid - 1;
+		}
+		if(myGuess == arrWords[mid]){
+			pos = mid;
+			break;
+		}
+	}
+	if(pos == 60000){
+		cout << "not a word" << endl;
+		getWord();
+	}
+};
+
+#endif
