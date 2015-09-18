@@ -1,0 +1,81 @@
+//Programmer: Nicole Markley
+//Purpose: Create players and their scores
+//Done but not checked 4/29/15
+
+#ifndef _PLAYER_H
+#define _PLAYER_H
+
+#include <string>
+#include <iostream>
+#include <sstream>
+using namespace std;
+
+class Player{
+private:
+	string myInitial;
+	int myScore;
+public:
+	//Constructors
+	Player(); //default constructor
+	Player(string in, int score); //Fill Constructor
+	Player(const Player &); //Copy Constructor
+	//Member Functions
+	string getIn();
+	void setIn(string name);
+	void askIn();
+	int getScore();
+	void setScore(int score);
+	void makeString();
+};
+
+//Constructors
+// Default
+Player::Player(){
+	myInitial = "AA";
+	myScore = 0;
+};
+
+//Fill
+Player::Player(string in, int score){
+	myInitial = in;
+	myScore = score;
+};
+
+//Copy
+Player::Player(const Player & Per){
+	myInitial = Per.myInitial;
+	myScore = Per.myScore;
+};
+
+//Member Functions
+void Player::setIn(string name){
+	myInitial = name;
+};
+
+string Player::getIn(){
+	return myInitial;
+};
+
+void Player::setScore(int score){
+	myScore = score;
+};
+
+int Player::getScore(){
+	return myScore;
+};
+
+void Player::makeString(){
+	ostringstream buffer;
+	string score, output;
+	buffer << myScore;
+	score = buffer.str();
+	output = myInitial + " scored " + score + " points";
+	cout << output << endl;
+};
+
+void Player::askIn(){
+	cout << "What are your initials? ";
+	cin >> myInitial;
+};
+
+#endif
