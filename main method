@@ -1,0 +1,39 @@
+//Programmer: Nicole Markley
+//Purpose:: Play a simplified game of scrabble.
+
+#include "BagOfTiles.h"
+#include "TopTen.h"
+#include "Player.h"
+#include "ScrabbleWord.h"
+#include "Tile.h"
+#include <iostream>
+using namespace std;
+
+int main(){
+int response = 1, result;
+BagOfTiles play;
+ScrabbleWord word;
+Player user;
+TopTen list;
+
+user.askIn();
+
+do{
+	play.outputHand();
+	//list.output();
+	word.getWord();
+	result = play.checkJots(word.returnWord(), user);
+	if(result == 0){
+		cout << "You used letters you don't have tiles for. Try again. " << endl;
+		continue;
+	};
+	cout << "Do you want to play another round? Enter 1 for yes, enter 0 for no. ";
+	cin >> response;
+	if(response == 1){
+		continue;
+	};
+	list.check(user);
+}while(response != 0);	
+//system("PAUSE");
+return 0;
+}
